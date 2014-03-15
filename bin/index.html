@@ -1,0 +1,19 @@
+<html>
+
+<body>Upload file.
+<form method="POST" action="/postfile"   enctype="multipart/form-data">
+<input type="file" name="file" /> <br/>
+<input type="submit" value="Upload" />
+</form>
+
+<br/>
+http://127.0.0.1:8080/queryfile?receiver=leader&downloaded=0 <br/>
+<b>receiver </b>is receiver of file<br/>
+
+<b>downloaded</b> indicated wether the file is downloaded by someone</br>
+  <b>downloaded=2</b> to find all the file is downloaded and un-downloaded <br/>
+<br/>
+</br>
+<A href="./queryfile">query all the file uploaded on the server</A>
+</body>
+</html>
