@@ -1,0 +1,23 @@
+
+
+Copyright (c) 2014-  alongL <v6543210@gmail.com>
+
+All rights reserved
+
+This code is distrbuted under the terms of the GNU General Public License version 2 as
+published by the Free Software Foundation. For the terms of this
+license, see <http://www.gnu.org/licenses>.
+
+You are free to use this code under the terms of the GNU General
+Public License, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+[mongoose]
+mongoose is belong to cesanta.
+This software use mongoose as base.
+you can get mongoose at https://github.com/cesanta/mongoose/
+
+[sqlit]
+sqlite is used as base.
+you can get sqlite at http://www.sqlite.org/
