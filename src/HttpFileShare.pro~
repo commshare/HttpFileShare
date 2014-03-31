@@ -1,0 +1,25 @@
+
+TEMPLATE = app
+QT += core
+
+CONFIG += console
+#DEFINES += 
+DESTDIR = ../bin
+
+
+
+HEADERS += mongoose.h \
+		window.h
+			
+SOURCES += mongoose.c \
+		   main.cpp \
+	           window.cpp
+!win32{	SOURCES += sqlite3/sqlite3.c
+}		   
+
+win32{
+LIBS += -L$$PWD/lib \
+		-lsqlite3
+} 		   
+RESOURCES  = systray.qrc
+RC_FILE = myapp.rc

@@ -1,6 +1,7 @@
 
 #include "mongoose.h"
 #include "sqlite3/sqlite3.h"
+#include "window.h"
 
 #include <time.h>
 #include <iostream>
@@ -17,12 +18,13 @@
 #include <QDate>
 #include <QMessageBox>
 
+
 using namespace std;
 sqlite3 * pDB;
 
 
 
-//char* U2G(const char* utf8)//UTF-8µ½GB2312µÄ×ª»»
+//char* U2G(const char* utf8)//UTF-8åˆ°GB2312çš„è½¬æ¢
 //{
 //	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
 //	wchar_t* wstr = new wchar_t[len+1];
@@ -36,7 +38,7 @@ sqlite3 * pDB;
 //	return str;
 //}
 //
-//char* G2U(const char* gb2312)//GB2312µ½UTF-8µÄ×ª»»
+//char* G2U(const char* gb2312)//GB2312åˆ°UTF-8çš„è½¬æ¢
 //{
 //	int len = MultiByteToWideChar(CP_ACP, 0, gb2312, -1, NULL, 0);
 //	wchar_t* wstr = new wchar_t[len+1];
@@ -59,12 +61,12 @@ int createTable()
 	int res = sqlite3_exec(pDB , createTab.c_str() ,0 ,0, &errMsg);
 	if (res != SQLITE_OK)
 	{
-		std::cout << "Ö´ĞĞ´´½¨tableµÄSQL ³ö´í." << errMsg << std::endl;
+		std::cout << "æ‰§è¡Œåˆ›å»ºtableçš„SQL å‡ºé”™." << errMsg << std::endl;
 		return -1;
 	}
 	else
 	{
-		std::cout << "´´½¨tableµÄSQL³É¹¦Ö´ĞĞ."<< std::endl;
+		std::cout << "åˆ›å»ºtableçš„SQLæˆåŠŸæ‰§è¡Œ."<< std::endl;
 	}
 	return 0;
 }
@@ -80,7 +82,7 @@ int queryByMD5(QString& filename_, QString& filepath_, QString MD5)
 	int rc = sqlite3_step(stmt);
 	if (rc != SQLITE_ROW)
 	{
-		std::cout << "quuryByMD5 Ö´ĞĞ³ö´í."<< std::endl;
+		std::cout << "quuryByMD5 æ‰§è¡Œå‡ºé”™."<< std::endl;
 		return -1;
 	}
 	while( rc == SQLITE_ROW )
@@ -122,12 +124,12 @@ void getFile(struct mg_connection *conn)
 	int res = sqlite3_exec(pDB , updateTable.toStdString().c_str() ,0 ,0, &errMsg);
 	if (res != SQLITE_OK)
 	{
-		std::cout << "¸üĞÂtableµÄSQL ³ö´í." << errMsg << std::endl;
+		std::cout << "æ›´æ–°tableçš„SQL å‡ºé”™." << errMsg << std::endl;
 		return ;
 	}
 	else
 	{
-		std::cout << "¸üĞÂtableµÄSQL³É¹¦Ö´ĞĞ."<< std::endl;
+		std::cout << "æ›´æ–°tableçš„SQLæˆåŠŸæ‰§è¡Œ."<< std::endl;
 	}
 
 }
@@ -173,7 +175,7 @@ int insertRecord(QString &md5, QString &filepath, QString &filename,QString type
 		filepath.isEmpty() ||
 		filename.isEmpty() )
 	{
-		return -1; //¼ì²éÊäÈëÊÇ·ñÎª¿Õ
+		return -1; //æ£€æŸ¥è¾“å…¥æ˜¯å¦ä¸ºç©º
 	}
 
 	QString timeString;
@@ -181,7 +183,7 @@ int insertRecord(QString &md5, QString &filepath, QString &filename,QString type
 	QDate date = QDate::currentDate();
 	timeString = (date.toString("yyyy-MM-dd/")).append(t.toString("hh:mm:ss"));
 
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("system"));//Õâ¸ö·Ç³£ÖØÒª£¬Ã»ÓĞÕâ¸ö£¬ÏÂÃæµÄfilename.toUtf8()¾Í»á³ö´í
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("system"));//è¿™ä¸ªéå¸¸é‡è¦ï¼Œæ²¡æœ‰è¿™ä¸ªï¼Œä¸‹é¢çš„filename.toUtf8()å°±ä¼šå‡ºé”™
 	char* errMsg;
 
 	QString downloaded ="0";
@@ -201,7 +203,7 @@ int insertRecord(QString &md5, QString &filepath, QString &filename,QString type
 	if (res != SQLITE_OK)
 	{
 		std::cout << "insertRecord error." << errMsg << std::endl;
-		return -2;//²åÈë³ö´í
+		return -2;//æ’å…¥å‡ºé”™
 	}
 	res = sqlite3_exec(pDB,"commit transaction;",0,0, &errMsg);
 	std::cout<<"file information of "<<filename.toStdString()<<" is inserted into the database."<< std::endl;
@@ -209,7 +211,7 @@ int insertRecord(QString &md5, QString &filepath, QString &filename,QString type
 }
 
 
-char *rand_str(char *str,const int len)  //Éú³ÉËæ»úÊı
+char *rand_str(char *str,const int len)  //ç”Ÿæˆéšæœºæ•°
 {
 	int i;
 	for(i=0;i<len-1;i++)
@@ -262,7 +264,7 @@ void postFile(struct mg_connection *conn)
 		if(type.isEmpty()) type="file";
 
 		rand_str(randomString, sizeof(randomString));
-		mg_md5(buf, randomString,NULL); //±ØĞëÒªÒÔNULL½áÎ²
+		mg_md5(buf, randomString,NULL); //å¿…é¡»è¦ä»¥NULLç»“å°¾
 		md5 = QString(buf);
 		insertRecord(md5, pathInDB, fileName, type, sender, receiver); //sender and receiver is default set to "source" and "target"
 		QString URL;
@@ -293,7 +295,7 @@ void postFile(struct mg_connection *conn)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-void queryFileError(struct mg_connection *conn, QString & errorString)
+void queryFileError(struct mg_connection *conn, const QString & errorString)
 {
 	QString html_queryError=	"<html><body>";
 	html_queryError.append(errorString);
@@ -321,7 +323,7 @@ void qureryFile(struct mg_connection *conn)
 	{
 		strsql.append("WHERE receiver=\"");
 		strsql.append(userName+ "\"");
-		if (downloaded != "2") //downloaded=2 Êä³öÈ«²¿ÎÄ¼ş
+		if (downloaded != "2") //downloaded=2 è¾“å‡ºå…¨éƒ¨æ–‡ä»¶
 		{
 			strsql.append(" AND ");
 			strsql.append("downloaded=\"");
@@ -330,7 +332,7 @@ void qureryFile(struct mg_connection *conn)
 		}
 	}
 
-	if(queryString.isEmpty()) //¿Õ´®²éÕÒÈ«²¿ÄÚÈİ
+	if(queryString.isEmpty()) //ç©ºä¸²æŸ¥æ‰¾å…¨éƒ¨å†…å®¹
 		strsql = QString("SELECT filename , md5, sender, receiver, downloaded,type, time,filepath  FROM http_log ");
 
 	sqlite3_stmt * stmt;
@@ -338,7 +340,7 @@ void qureryFile(struct mg_connection *conn)
 	int rc = sqlite3_step(stmt);
 	if (rc != SQLITE_ROW && rc!=SQLITE_DONE)
 	{
-		std::cout << "queryFile By User Name Ö´ĞĞ³ö´í."<< std::endl;
+		std::cout << "queryFile By User Name æ‰§è¡Œå‡ºé”™."<< std::endl;
 		queryFileError(conn, QString("queryFile error: sql error."));
 		return ;
 	}
@@ -438,15 +440,16 @@ static int event_handler(struct mg_connection *conn, enum mg_event ev)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int main(void) 
+int main(int argc, char** argv)
 {
-	QTextCodec::setCodecForTr(QTextCodec::codecForName("GBK"));//±ØĞëÒªÓĞµÄ£¬ÉÏÃæÓÃµ½ÁË
+	QTextCodec::setCodecForTr(QTextCodec::codecForName("GBK"));//å¿…é¡»è¦æœ‰çš„ï¼Œä¸Šé¢ç”¨åˆ°äº†
 	srand(time(0));
 
-	//QApplication app(argc,argv);
+    QApplication app(argc,argv);
 
 	QString db_file_name = "./log.sqlite";
-	QFile dbfile(db_file_name);
+    QString programDir = QCoreApplication::applicationDirPath();
+    QFile dbfile(programDir+"/"+ db_file_name);
 	if(!dbfile.exists())
 	{
 		QString errorMsg = "Can't find database file :" + db_file_name;
@@ -461,6 +464,8 @@ int main(void)
 		return -1;
 	}
 
+    //Window window;
+    //window.show();
 	QString port, document_root;
 	QSettings settings("httpServerSettings.ini", QSettings::IniFormat);
 	settings.beginGroup("httpFileServer");
@@ -469,8 +474,8 @@ int main(void)
 	settings.endGroup();
 
 	char port_c[10] ,document_root_c[256];
-	strcpy_s(port_c,port.toStdString().c_str() );
-	strcpy_s(document_root_c, document_root.toStdString().c_str());
+    strcpy(port_c,port.toStdString().c_str() );
+    strcpy(document_root_c, document_root.toStdString().c_str());
 
 	struct mg_server *server;
 	server = mg_create_server(NULL, event_handler);

@@ -92,8 +92,8 @@ void mg_printf_data(struct mg_connection *, const char *format, ...);
 
 
 // along
- void send_file_data(struct mg_connection *conn, FILE *fp);
- void transfer_file_data(struct connection *conn);
+ //void send_file_data(struct mg_connection *conn, FILE *fp);
+ //void transfer_file_data(struct connection *conn);
 //
 
 
