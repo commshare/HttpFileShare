@@ -230,18 +230,56 @@ void postFile(struct mg_connection *conn)
 	int data_len;
 	char var_name[1024], file_name[1024];
 
+	QString refer(mg_get_header(conn, "Referer"));
+	QUrl referUrl(refer);
+	QString dirPath = referUrl.path();
+	QString dataDirString;
+	QString workingDir = QDir::currentPath();
+	QString pathInDB ;
+	if(dirPath != "/" || !dirPath.isEmpty())
+	{
+		dataDirString = workingDir + dirPath;
+		if (mg_parse_multipart(conn->content, conn->content_len,
+			var_name, sizeof(var_name),
+			file_name, sizeof(file_name),
+			&data, &data_len) > 0) 
+		{
+			fileName = QObject::trUtf8(file_name);
+			if(fileName.contains('\\'))
+				fileName = fileName.mid(fileName.lastIndexOf('\\')+1);// iexplorer upload file with filename as "c:\documents\user\desktop\ss.txt"
+
+			filePath = dataDirString+ "/"+  fileName;
+			pathInDB = dirPath+ "/"+ fileName;
+			QFile file(filePath);
+			if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+			{
+				file.write(data,data_len);
+				file.flush();
+				file.close();
+			}
+			cout<<"file upload sucess: "<<filePath.toStdString()<<endl;
+		}
+		QString URL;
+		QString host = QString(mg_get_header(conn,"Host"));
+		URL = "http://"+ host +"/"+ pathInDB;
+
+		mg_printf_data(conn, "<html><body>File uploaded Sucess as: [<A href=\"%s\" target=\"_blank\">%s</A>]</body></html>",
+			URL.toStdString().c_str(),
+			fileName.toStdString().c_str());
+		return;
+	}
+	else dataDirString = workingDir + "/data";
+
+	QString date = QDate::currentDate().toString("yyyyMMdd");
+	QDir qdir;	qdir.mkpath(dataDirString+"/"+date); 
+
+	QString time = QTime::currentTime().toString("hhmmsszzz");
 	if (mg_parse_multipart(conn->content, conn->content_len,
 		var_name, sizeof(var_name),
 		file_name, sizeof(file_name),
 		&data, &data_len) > 0) 
 	{
-		QString workingDir = QDir::currentPath();
-		QString dataDirString = workingDir + "/data";
-		QString date = QDate::currentDate().toString("yyyyMMdd");
-		QDir qdir;	qdir.mkpath(dataDirString+"/"+date); 
-
-		QString time = QTime::currentTime().toString("hhmmsszzz");
-		fileName = QString(file_name);
+		fileName = QObject::tr(file_name);
 		if(fileName.contains('\\'))
 			fileName = fileName.mid(fileName.lastIndexOf('\\')+1);// iexplorer upload file with filename as "c:\documents\user\desktop\ss.txt"
 
@@ -443,6 +481,7 @@ static int event_handler(struct mg_connection *conn, enum mg_event ev)
 int main(int argc, char** argv)
 {
 	QTextCodec::setCodecForTr(QTextCodec::codecForName("GBK"));//必须要有的，上面用到了
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("GBK"));
 	srand(time(0));
 
     QApplication app(argc,argv);

@@ -3081,8 +3081,9 @@ static void send_directory_listing(struct connection *conn, const char *dir) {
 
   mg_printf_data(&conn->mg_conn,
               "<html><head><title>Index of %s</title>"
-              "<style>th {text-align: left;}</style></head>"
-              "<body><h1>Index of %s</h1><pre><table cellpadding=\"0\">"
+              "<style>th {text-align: left;}</style></head><body>"
+			  "<div id=\"upload\" style=\"float:right; width:300px; height:100px; padding:20px; margin: 10px;border:2px solid #F00\"><form method=\"POST\" action=\"/postfile\"  enctype=\"multipart/form-data\"><input type=\"file\" name=\"file\" /> <br/><input type=\"submit\" value=\"upload\" /></form></div>"
+			  "<h1>Index of %s</h1><pre><table cellpadding=\"0\">"
               "<tr><th><a href=\"?n%c\">Name</a></th>"
               "<th><a href=\"?d%c\">Modified</a></th>"
               "<th><a href=\"?s%c\">Size</a></th></tr>"
@@ -3097,7 +3098,7 @@ static void send_directory_listing(struct connection *conn, const char *dir) {
     free(arr[i].file_name);
   }
   free(arr);
-
+  mg_printf_data(&conn->mg_conn, "</tbody></table></pre></body></html>");
   write_terminating_chunk(conn);
   close_local_endpoint(conn);
 }

@@ -5,8 +5,9 @@ QT += core
 CONFIG += console
 #DEFINES += 
 DESTDIR = $$PWD/bin
-
-
+TARGET = httpFileShare
+!release{	TARGET = httpFileShare_d
+}
 
 HEADERS += src/mongoose.h \
 		src/window.h
